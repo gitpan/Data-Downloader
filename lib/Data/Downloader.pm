@@ -124,7 +124,7 @@ use strict;
 
 def_noun "metadatum" => "metadata";
 
-our $VERSION = '0.9901';
+our $VERSION = '0.9902';
 our $db;
 our $useProgressBars;   # set during import to turn on Smart::Comments
 our $setupDone;

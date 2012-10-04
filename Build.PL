@@ -13,6 +13,7 @@ my $builder = Module::Build->new(
 	'FindBin'                    => 0,
 	'IO::File'                   => 0,
 	'Parallel::ForkManager'      => 0,
+    'File::Slurp'                => 0,
     },
     requires            => {
 	'DBD::SQLite'                => '1.33',

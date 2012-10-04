@@ -12,6 +12,7 @@ WriteMakefile
                    'File::Basename' => 0,
                    'File::Compare' => 0,
                    'File::Path' => 0,
+                   'File::Slurp' => 0,
                    'File::Spec' => 0,
                    'File::Temp' => 0,
                    'File::stat' => 0,

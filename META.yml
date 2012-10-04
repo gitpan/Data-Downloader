@@ -4,6 +4,7 @@ author:
   - 'Brian Duggan <brian.duggan@nasa.gov>'
 build_requires:
   File::Compare: 0
+  File::Slurp: 0
   FindBin: 0
   IO::File: 0
   Parallel::ForkManager: 0
@@ -19,7 +20,7 @@ name: Data-Downloader
 provides:
   Data::Downloader:
     file: lib/Data/Downloader.pm
-    version: 0.9901
+    version: 0.9902
   Data::Downloader::Cache:
     file: lib/Data/Downloader/Cache.pm
     version: 0
@@ -100,4 +101,4 @@ requires:
   if: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.9901
+version: 0.9902

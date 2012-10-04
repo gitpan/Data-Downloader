@@ -1,5 +1,8 @@
 Release history for Data-Downloader
 
+Version 0.9902  2012-10-04
+ - fixed up dependencies
+
 Version 0.9901  2012-10-03
  - initial public release
 
