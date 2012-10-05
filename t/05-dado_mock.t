@@ -9,7 +9,7 @@ use File::Basename qw/dirname/;
 use File::Compare;
 use File::Path;
 use FindBin qw/$Bin/;
-use Test::More  tests => 15;
+use Test::More  tests => 17;
 use t::lib::functions;
 
 
@@ -41,6 +41,11 @@ ok_system("dado files dump > ${TMP_DIR}/dumped.out");
 
 is(compare("${TMP_DIR}/dumped.out", "$t_dir/sample_rss/omisips.dd.txt"), 0,
    'dump comparison');
+
+ok_system("dado files list > ${TMP_DIR}/list.out");
+
+is(compare("${TMP_DIR}/list.out", "$t_dir/sample_rss/omisips.list.txt"), 0,
+   'list comparison');
 
 ok_system("dado files --md5 'like: 8f%' dump | egrep -q 'md5: 8f'");
 

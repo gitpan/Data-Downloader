@@ -607,6 +607,16 @@ sub remove {
     my $tries = 0;
     my $success;
     my $errors;
+
+    # For SQLite:
+    # Force an exclusive transaction.  This is necessary when doing WAL
+    # journaling.  Without this, the first statement, which is a select
+    # on symlinks will force a SHARED lock.  When it then tries to DELETE
+    # the symlinks it will not be able to upgrade to an EXCLUSIVE lock
+    # if another process already has an EXCLUSIVE lock, so it will fail
+    # without doing the busy timeout.
+    local $self->db->dbh->{sqlite_use_immediate_transaction} = 1;
+
     while (!$success && $tries++ < 10) {
         $success = $self->db->do_transaction(sub {
             if ($self->on_disk) {
@@ -783,6 +793,51 @@ sub load_from_urn {
         $key = $new->name;
     }
     shift->load(use_key => $key, @_ );
+}
+
+=item list
+
+List the names of files matching the given criteria.
+
+The list is printed to STDOUT.
+
+Arguments:
+
+ filename -- show the file name in the list? (default: True)
+ md5      -- show the file MD5 in the list? (default: False)
+ id       -- show the file ID in the list? (default: False)
+ url      -- show the file URL in the list? (default: False)
+ urn      -- show the file URN in the list? (default: False)
+ size     -- show the file size in the list? (default: False)
+ on_disk  -- show the file status in the list? (default: False)
+ disk     -- show the file location in the list? (default: False)
+ atime    -- show the file ingest time in the list? (default: False)
+
+Returns :
+
+ nothing
+
+=cut
+
+sub list {
+    my $self = shift;
+    my %spec = map {
+	$_ => ($_ eq 'filename') ? { default => 1 } : { default => 0 }
+    } $self->meta->columns;
+    my %args = validate(@_, \%spec);
+    my @fields;
+    if (exists $args{filename} && $args{filename}) {
+	delete $args{filename};
+	push(@fields, $self->filename);
+    }
+    push(@fields,
+	 map { my $value = $self->$_;
+	       $value = $value->iso8601 if (ref($value) eq 'DateTime');
+	       $args{$_} ? $value : ();
+	     } keys(%args)
+	 );
+    unless (@fields) { @fields = ($self->filename); }
+    print join('  ', @fields), "\n";
 }
 
 =back

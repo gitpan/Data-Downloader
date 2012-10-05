@@ -1,10 +1,29 @@
 Release history for Data-Downloader
 
+------------------------------------------------------------------------
+
+Version 0.9903  2012-10-05
+ - merged version 0.52
+ - various test and doc fixes
+
+------------------------------------------------------------------------
+
 Version 0.9902  2012-10-04
  - fixed up dependencies
 
+------------------------------------------------------------------------
+
 Version 0.9901  2012-10-03
  - initial public release
+
+------------------------------------------------------------------------
+
+Version 0.52
+
+ - Use immediate transaction for file->remove to force exclusive lock
+ - Added "list" method for files; enabled "dado files list" action
+ - Changed default database for testing; Removed environment variable
+   DATA_DOWNLOADER_TMPDIR and added DATA_DOWNLOADER_TESTDB
 
 ------------------------------------------------------------------------
 

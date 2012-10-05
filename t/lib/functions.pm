@@ -57,6 +57,8 @@ sub set_path {
 
     my $perldir = dirname `which perl`;
     $ENV{PATH} = "$Bin/../blib/script:$perldir:/usr/local/bin:/usr/bin:/bin";
+    warn "# modifying PERL5OPT for tests ($ENV{PERL5OPT})" if $ENV{PERL5OPT};
+    $ENV{PERL5OPT} = "-Mblib=$Bin/../blib";
 
     return $ENV{PATH};
 

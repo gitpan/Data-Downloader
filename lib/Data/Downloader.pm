@@ -124,7 +124,7 @@ use strict;
 
 def_noun "metadatum" => "metadata";
 
-our $VERSION = '0.9902';
+our $VERSION = '0.9903';
 our $db;
 our $useProgressBars;   # set during import to turn on Smart::Comments
 our $setupDone;
@@ -411,6 +411,8 @@ create index symlink_linktree on symlink(linktree);
  Arnold Martin
 
  Graham Ollis
+
+ Curt Tilmes
 
  Michael Walters
 

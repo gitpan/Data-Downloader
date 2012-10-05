@@ -22,7 +22,7 @@ use strict;
 use warnings;
 
 use DBIx::Simple;
-use File::Spec::Functions qw(tmpdir);
+use File::Spec::Functions qw(catfile tmpdir);
 
 use base "Rose::DB";
 
@@ -30,7 +30,8 @@ __PACKAGE__->register_db(
     domain   => "test",
     type     => "main",
     driver   => "sqlite",
-    database => ($ENV{DATA_DOWNLOADER_TMPDIR} || tmpdir())."/dd_test.$>.db",  
+    database => ( $ENV{DATA_DOWNLOADER_TESTDB} ||
+                  catfile(tmpdir(), "dd_test.$>.db") ),
     connect_options => {
         PrintError => ($ENV{DD_PRINT_DB_ERRORS} ? 1 : 0),
         RaiseError => 0,
@@ -43,7 +44,8 @@ __PACKAGE__->register_db(
     domain   => "live",
     type     => "main",
     driver   => "sqlite",
-    database => ($ENV{DATA_DOWNLOADER_DATABASE} || "$ENV{HOME}/.data_downloader.db"),
+    database => ( $ENV{DATA_DOWNLOADER_DATABASE} ||
+                  catfile($ENV{HOME}, '.data_downloader.db') ),
     connect_options => {
         sqlite_use_immediate_transaction =>
             ($ENV{DATA_DOWNLOADER_IMMEDIATE_TRANSACTION} ? 1 : 0)

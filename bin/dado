@@ -254,14 +254,20 @@ sub main {
     my ($items,$action);
     my %args;
     my %criteria;
-    my %valid = (
-                  config => { init     => 1, update => 1 },
-                  feeds  => { refresh  => 1 },
-                  file   => { download => 1 },
-                  files  => { dump => 1, remove => 1, purge => 1, download => 1, check => 1, makelinks => 1 },
-                  linktrees => { rebuild => 1 },
+    my %valid = ( config       => { init       => 1,
+				    update     => 1 },
+                  feeds        => { refresh    => 1 },
+                  file         => { download   => 1 },
+                  files        => { dump       => 1,
+				    remove     => 1,
+				    purge      => 1,
+				    download   => 1,
+				    check      => 1,
+				    makelinks  => 1,
+				    list       => 1 },
+		  linktrees    => { rebuild    => 1 },
                   repositories => { dump_stats => 1 },
-                  disk   => { usage => 1 },
+                  disk         => { usage      => 1 },
                 );
     my $which = \%criteria;
     while ($_ = shift @command) {
@@ -273,7 +279,7 @@ sub main {
             );
             next;
         };
-        !defined($items)  and do { $items = $_;  next; };
+        !defined($items)  and do { $items  = $_;  next; };
         !defined($action) and do { $action = $_; $which = \%args; next; };
     }
 
@@ -281,9 +287,9 @@ sub main {
          unless $items && $action && $valid{$items}{$action};
 
     my %manager = (
-        feeds       => "Data::Downloader::Feed::Manager",
-        files       => "Data::Downloader::File::Manager",
-        linktrees   => "Data::Downloader::Linktree::Manager",
+        feeds        => "Data::Downloader::Feed::Manager",
+        files        => "Data::Downloader::File::Manager",
+        linktrees    => "Data::Downloader::Linktree::Manager",
         repositories => "Data::Downloader::Repository::Manager",
     );
     my $manageable = join '|', keys %manager;

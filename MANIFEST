@@ -52,6 +52,7 @@ t/sample_rss/flickr_apples.xml
 t/sample_rss/ghrc.xml
 t/sample_rss/modaps.xml
 t/sample_rss/omisips.dd.txt
+t/sample_rss/omisips.list.txt
 t/sample_rss/omisips.xml
 t/sample_rss/omisips_different_metadata.xml
 t/sample_rss/untested/datacast.xml
