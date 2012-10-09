@@ -9,7 +9,7 @@ use Data::Downloader;
 use Data::Dumper;
 use FindBin qw/$Bin/;
 use IO::File;
-use Test::More  tests => 4;
+use Test::More  tests => 5;
 use t::lib::functions;
 
 
@@ -42,3 +42,6 @@ Data::Downloader::Config->update(yaml => $new_conf);
 # diag Dumper($conf_dump);
 
 ok(test_cleanup($test_dir), "Test clean up");
+
+ok((unlink $config_file),"remove $config_file");
+

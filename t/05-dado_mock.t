@@ -9,9 +9,10 @@ use File::Basename qw/dirname/;
 use File::Compare;
 use File::Path;
 use FindBin qw/$Bin/;
-use Test::More  tests => 17;
+use Test::More;
 use t::lib::functions;
 
+plan $ENV{DADO_TESTS} ? ( tests => 17 ) : (skip_all => "set DADO_TESTS to run command line tests");
 
 BAIL_OUT "Test harness is not active; use prove or ./Build test"
     unless($ENV{HARNESS_ACTIVE});

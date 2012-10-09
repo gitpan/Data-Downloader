@@ -8,9 +8,10 @@ use warnings;
 use File::Compare;
 use File::Path;
 use FindBin qw/$Bin/;
-use Test::More  tests => 8;
+use Test::More;
 use t::lib::functions;
 
+plan $ENV{DADO_TESTS} ? ( tests => 8 ) : (skip_all => "set DADO_TESTS to run command line tests");
 
 my $t_dir = $Bin;
 my $test_dir = scratch_dir();

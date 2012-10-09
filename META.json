@@ -65,7 +65,7 @@
    "provides" : {
       "Data::Downloader" : {
          "file" : "lib/Data/Downloader.pm",
-         "version" : "0.9903"
+         "version" : "0.9904"
       },
       "Data::Downloader::Cache" : {
          "file" : "lib/Data/Downloader/Cache.pm",
@@ -138,5 +138,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.9903"
+   "version" : "0.9904"
 }
