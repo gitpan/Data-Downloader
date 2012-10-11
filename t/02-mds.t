@@ -10,8 +10,12 @@ use FindBin qw/$Bin/;
 use Test::More qw/no_plan/;
 use t::lib::functions;
 
-
 Log::Log4perl->get_logger("")->level("DEBUG");
+
+sub _find_files {
+    my @where = @_;
+    return map { -d $_ ? _find_files(glob "$_/*") : -e $_ ? $_ : () } @where;
+}
 
 my $test_dir = scratch_dir();
 # diag "storing tree in $test_dir";
@@ -25,22 +29,22 @@ my $mds = Data::Downloader::Repository->new(
     file_url_template => "http://example.com/data/<md5>/<filename>",
     disks             => [ map +{ root => "disk$_/"}, (1..100) ],
     metadata_transformations => [ 
-				  { input           => "archivesets",
-				    output          => "one_archiveset",
-				    function_name   => "split",
-				    order_key       => "1", },
-				  { input           => "one_archiveset",
-				    output          => "archiveset",
-				    function_name   => "match",
-				    function_params => "10003|70003",
-				    order_key       => "2", },
-				  ],
+                  { input           => "archivesets",
+                    output          => "one_archiveset",
+                    function_name   => "split",
+                    order_key       => "1", },
+                  { input           => "one_archiveset",
+                    output          => "archiveset",
+                    function_name   => "match",
+                    function_params => "10003|70003",
+                    order_key       => "2", },
+                  ],
     feeds => {
         name          => "georss",
         feed_template => 'https://example.com/'
-	    . 'service/georss?esdt=<esdt>&startdate=<startdate:%Y-%m-%d>'
-	    . '&as=<archiveset>&count=<count>&email=<email>'
-	    . '&password=<password>&met=0',
+        . 'service/georss?esdt=<esdt>&startdate=<startdate:%Y-%m-%d>'
+        . '&as=<archiveset>&count=<count>&email=<email>'
+        . '&password=<password>&met=0',
         feed_parameters => [
             { name => "email",    default_value => "" },
             { name => "password", default_value => "" },
@@ -70,7 +74,7 @@ my $mds = Data::Downloader::Repository->new(
             path_template  => "<archiveset>/<esdt>/<starttime:%Y>",
         },
         {
-	    root           => "$test_dir/by_orbit",
+            root           => "$test_dir/by_orbit",
             condition      => q/{ orbit => 18000 }/,
             path_template  => "<orbit>"
         }
@@ -96,9 +100,9 @@ ok(my $db = $mds->init_db, "Initialize DB") or BAIL_OUT $mds->error;
 
 SKIP: {
     skip "Unset DATA_DOWNLOADER_BULK_DOWNLOAD to run integrity check", 1 
-	if ($ENV{DATA_DOWNLOADER_BULK_DOWNLOAD});
+    if ($ENV{DATA_DOWNLOADER_BULK_DOWNLOAD});
     my $md_source = Data::Downloader::MetadataSource->new( feed => 9999,
-							   name => "invalid" );
+                               name => "invalid" );
     ok(!$md_source->save,
        "referential integrity check (db error may be above)");
 }
@@ -165,8 +169,10 @@ ok(ref($got) eq 'Data::Downloader::File', "download() returned an object");
 for my $linktree (@{ Data::Downloader::Linktree::Manager->get_linktrees }) {
     # diag "rebuilding link tree in ".$linktree->root;
     $linktree->rebuild;
-    next unless (-d $linktree->root); # no files matched the criteria
-    ok(system("find", $linktree->root, qw/-not -type d/)==0, "found files");
+    next unless -d $linktree->root; # no files matched the criteria
+    my @found = _find_files($linktree->root);
+    ok @found > 1, "Found some files in ".$linktree->root;
+
 }
 
 my $filename = $file->storage_path;

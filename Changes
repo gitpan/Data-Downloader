@@ -1,7 +1,12 @@
 Release history for Data-Downloader
 
+Version 0.9905 2012-10-11
+ - removed system find from tests
+
+------------------------------------------------------------------------
+
 Version 0.9904 2012-10-09
- - require DADO_TESTS for dado cli tests
+ - required DADO_TESTS for dado cli tests
 
 ------------------------------------------------------------------------
 

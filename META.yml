@@ -20,7 +20,7 @@ name: Data-Downloader
 provides:
   Data::Downloader:
     file: lib/Data/Downloader.pm
-    version: 0.9904
+    version: 0.9905
   Data::Downloader::Cache:
     file: lib/Data/Downloader/Cache.pm
     version: 0
@@ -101,4 +101,4 @@ requires:
   if: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.9904
+version: 0.9905
