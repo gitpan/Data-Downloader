@@ -85,20 +85,22 @@ sub t_copy {
 
 # Clean up test directories and database files
 sub test_cleanup {
+    my ( $dir, $db ) = @_;
 
-    my ($dir, $db) = @_;
-
-    rmtree($dir, { keep_root => ($ENV{DATA_DOWNLOADER_TMPDIR} ? 0 : 1), 
-		   safe => 1 } ) if ($dir && -d $dir);
+    rmtree( $dir, {
+            keep_root => ( $ENV{DATA_DOWNLOADER_TMPDIR} ? 0 : 1 ),
+            safe => 1
+        }
+    ) if ( $dir && -d $dir );
 
     $db ||= Data::Downloader::DB->new();
     my $db_file = $db->database;
-    foreach my $file ($db_file, $db_file.'.dado_stats_lock') {
-	unlink($file) if (-e $file);
+    return 1 if $db_file eq ':memory:';
+    foreach my $file ( $db_file, $db_file . '.dado_stats_lock' ) {
+        unlink($file) if -e $file;
     }
 
     return 1;
-
 }
 
 1;

@@ -4,7 +4,9 @@ bin/dado_rebuild_meta
 Build.PL
 Changes
 eg/flickr.pl
+eg/gsics.yml
 eg/omi.pl
+eg/podaac.yml
 etc/flickr.yml
 etc/ghrc.yml
 etc/mds_urn.yml
@@ -45,11 +47,13 @@ t/05-dado_mock.t
 t/06-dado-urn.t
 t/07-authentication.t
 t/09-lru.t
+t/10-datacasting.t
 t/98-pod-coverage.t
 t/98-pod.t
 t/lib/functions.pm
 t/sample_rss/flickr_apples.xml
 t/sample_rss/ghrc.xml
+t/sample_rss/gsics.xml
 t/sample_rss/modaps.xml
 t/sample_rss/omisips.dd.txt
 t/sample_rss/omisips.list.txt
@@ -60,6 +64,7 @@ t/sample_rss/untested/flickr_atom.xml
 t/sample_rss/untested/flickr_rss.xml
 t/sample_rss/untested/flickr_volcano.xml
 t/sample_rss/untested/landsat.xml
+t/sample_rss/untested/PODAAC-ASOP2-25X01-rss.xml
 t/sample_rss/untested/smugmug.xml
 t/sample_rss/untested/smugmug_hubble.xml
 t/sample_rss/urn.dd.txt

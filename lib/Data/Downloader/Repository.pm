@@ -120,31 +120,39 @@ sub update_stats {
     return if $duration &&
         $self->stat_info->last_stat_update &&
         ($self->stat_info->last_stat_update->add_duration($duration)) > DateTime->now();
-    # Also set an advisory lock; only one process should do this.
-    my $lockfile = $self->db->database.".dado_stats_lock";
 
-    open my $lock, ">$lockfile" or do {
-	ERROR "cannot write to $lockfile";
-	return;
-    };
-    flock($lock, LOCK_EX) or return;
-    DEBUG "updating stats ($$ locking $lockfile)";
+    # Also set an advisory lock; only one process should do this.
+    my ($lockfile,$lock);
+    unless ($self->db->database eq ':memory:') {
+        $lockfile = $self->db->database.".dado_stats_lock";
+    }
+
+    if ($lockfile) {
+        open $lock, ">$lockfile" or do {
+            ERROR "cannot write to $lockfile";
+            return;
+        };
+        flock($lock, LOCK_EX) or return;
+    }
+    DEBUG "updating stats ($$)";
     my $files = Data::Downloader::File::Manager->get_files([on_disk => 1 ]);
     for my $file (@$files) {
         $file->load(speculative => 1) or next;
         my $stat = stat($file->storage_path) or next;
         $file->atime( DateTime->from_epoch(epoch => $stat->atime) );
         $file->save(changes_only => 1) or do {
-	    ERROR $file->error;
-	    return;
-	};
+            ERROR $file->error;
+            return;
+        };
     }
     $self->stat_info->last_stat_update(DateTime->now());
     $self->stat_info->save or do {
-	ERROR $self->stat_info->error;
-	return;
+        ERROR $self->stat_info->error;
+        return;
     };
-    flock ($lock, LOCK_UN) or LOGWARN "cannot unlock $lockfile";
+    if ($lockfile) {
+        flock ($lock, LOCK_UN) or LOGWARN "cannot unlock $lockfile";
+    }
 }
 
 =item dump_stats

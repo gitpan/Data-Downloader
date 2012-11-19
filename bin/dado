@@ -31,15 +31,82 @@ dado - Data::Downloader command-line interface.
     dado --trace root feeds refresh
     dado --progress_bars linktrees rebuild
 
+=head1 QUICK START
+
+To use dado to download some scientific data files, here are a few sample repositories
+and sequences of commands to try out :
+
+Example 1 :
+
+    cat > gsics.conf
+    name: gsics
+    storage_root: /tmp/datastore
+    cache_max_size: 2048000
+    cache_strategy: LRU
+    feeds:
+      name: all
+      feed_template: http://gsics.nesdis.noaa.gov/datacast/all.xml
+      file_source:
+        filename_xpath: title
+        url_xpath: enclosure/@url
+      metadata_sources:
+        - name: starttime
+          xpath: datacasting:customElement[@name="validity_start_time"]/@value
+        - name: endtime
+          xpath: datacasting:customElement[@name="validity_end_time"]/@value
+    linktrees:
+      - condition: ~
+        path_template: '<starttime:%Y/%m/%d>'
+        root: /tmp/datalinks
+    ^D
+
+    $ dado config init --filename ./gsics.conf
+    $ dado feeds refresh
+    $ dado files download
+    $ find /tmp/data* -not -type d
+
+Example 2 :
+
+    cat > podaac.conf
+    ---
+    name: podaac
+    storage_root: /tmp/datastore
+    cache_max_size: 2048000
+    cache_strategy: LRU
+    feeds:
+      name: asop2
+      feed_template: http://podaac.jpl.nasa.gov/datacast/PODAAC-ASOP2-25X01-rss.xml
+      file_source:
+        filename_xpath: title
+        url_xpath: enclosure/@url
+      metadata_sources:
+        - name: starttime
+          xpath: datacasting:acquisitionStartDate
+        - name: endtime
+          xpath: datacasting:acquisitionEndDate
+    linktrees:
+      - condition: ~
+        path_template: '<starttime:%Y/%m/%d>'
+        root: /tmp/datalinks
+    ^D
+
+    $ dado config init --filename ./podaac.conf
+    $ dado feeds refresh
+    $ dado files download
+    $ find /tmp/data* -not -type d
+
 =head1 DESCRIPTION
 
-This is the command line interface for L<Data::Downloader|Data::Downloader>.
-
+This is the command line interface for L<Data::Downloader>.
 It is used to manage a repository of files, file metadata, and symbolic links.
 
 An invocation of dado is of one of the forms described in the SYNOPSIS above.
 The valid values for DEBUG OPTIONS, CRITERIA, ACTION, and ACTION OPTIONS are
 described below.
+
+The options available when using dado commands correspond to the methods
+available within the corresponding L<Data::Downloader> classes.  Those
+classes are linked to in the headings below.
 
 =head1 DEBUG OPTIONS
 
@@ -64,7 +131,7 @@ The valid ACTIONs depend on what item is selected.
 
 =over
 
-=item config
+=item L<config|Data::Downloader::Config>
 
 Actions : init, update.
 
@@ -85,13 +152,13 @@ their symlinks).
 
 The configuration file format is described in detail in L<Data::Downloader::Config>.
 
-=item disk
+=item L<disk|Data::Downloader::Disk>
 
 Actions : --usage
 
 Action options : --summary, --human
 
-=item file
+=item L<file|Data::Downloader::File>
 
 Actions : download
 
@@ -125,7 +192,7 @@ Symbolic links will be created to this file, as specified, e.g.
 would result in a symlink from /tmp/put_all_files_here/something.txt
 to the location of the actual file.
 
-=item files
+=item L<file|Data::Downloader::File>s
 
 Valid actions: dump, download, makelinks, remove, check
 
@@ -161,7 +228,7 @@ skip a regex of keys, e.g.
 
   dado files --esdt OML1BCAL dump --skip_re 'log_entries|atime'
 
-=item feeds
+=item L<feed|Data::Downloader::Feed>s
 
 Actions : refresh
 
@@ -189,7 +256,7 @@ values set like so :
 If one of the parameters is named "count", this will limit
 the number of files to download.
 
-=item linktrees
+=item L<linktree|Data::Downloader::Linktree>s
 
 Actions : rebuild
 
@@ -202,7 +269,7 @@ for linktrees, e.g.
     dado linktrees --root '/linktree/root' rebuild
     dado linktrees --root 'like: %abc%' rebuild
 
-=item repositories
+=item L<repositories|Data::Downloader::Repository>
 
 Repositories are directory trees which contains all of the
 files that been downloaded.  The only valid action is "dump_stats".
@@ -212,8 +279,6 @@ files that been downloaded.  The only valid action is "dump_stats".
 =head1 SEE ALSO
 
 L<Data::Downloader>
-
-L<Data::Downloader::Config>
 
 =cut
 

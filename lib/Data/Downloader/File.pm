@@ -4,7 +4,39 @@ Data::Downloader::File
 
 =head1 DESCRIPTION
 
-Represents a file managed by data::downloader.
+Represents a file managed by Data::Downloader.  Files
+are represented in the database as rows in the file table.
+Each row corresponds to a single file on disk.  There may
+be multiple symbolic links to this file, but the uniqueness
+of this row reflects the different ways in
+in which files and their contents may be considered unique.
+In addition the unique numeric integer id for this file, there
+are three types of uniqueness : content, filename, and resource.
+
+=over
+
+=item content
+
+If a file appears in a feed which has the same MD5 sum as an existing file,
+it will not be downloaded multiple times.  However, multiple symlink links
+may be created for it (based on the metadata in the feed).
+
+=item filename
+
+Filenames are considered unique; if an existing filename appears again,
+it will be treated as an update, rather than an insert, to the metadata
+database.  (However, if the MD5 differs, it will be re-downlaoded).
+
+=item resource
+
+If a urn_xpath is given in the L<configuration|Data::Downloader::Config>, this
+will be treated a unique identifier for the content.  If the same value
+appears again, an update, rather than an insert, will occur.  If the filename
+is different, this will be changed.  if the content is different, new
+content will be downloaded and the old content will be removed.
+
+=back
+
 
 =head1 METHODS
 
@@ -117,7 +149,7 @@ sub _choose_disk {
     }
 
     # Possible disks
-    my @disks = @{ $self->repository_obj->disks };
+    my @disks = @{ $self->repository_obj->disks || [] };
     return unless @disks > 0;
     TRACE "Possible disks : ".join ',',(map $_->root, @disks);
     my $pick;
@@ -276,6 +308,7 @@ sub download {
         DEBUG "faking the download";
         print $tmpfile "This is a test file from ".$self->url."\n";
         print $tmpfile "MD5: ".($self->md5 || "unknown before download")."\n";
+        print $tmpfile "Some random stuff : ".rand."\n";
         $tmpfile->flush;
     } else {
         INFO "downloading from ".$self->url;
@@ -343,7 +376,7 @@ sub download {
     $self->atime( DateTime->from_epoch(epoch => $stat->atime) );
     $self->db->do_transaction(
         sub {
-            $self->save( changes_only => 1 ) or die $self->errors;
+            $self->save( changes_only => 1 ) or die $self->error;
         }
     ) or do {
         WARN "errors saving file : ".$self->db->error;

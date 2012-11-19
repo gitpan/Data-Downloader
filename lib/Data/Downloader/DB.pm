@@ -30,8 +30,7 @@ __PACKAGE__->register_db(
     domain   => "test",
     type     => "main",
     driver   => "sqlite",
-    database => ( $ENV{DATA_DOWNLOADER_TESTDB} ||
-                  catfile(tmpdir(), "dd_test.$>.db") ),
+    database => ( $ENV{DATA_DOWNLOADER_TESTDB} || ':memory:' ),
     connect_options => {
         PrintError => ($ENV{DD_PRINT_DB_ERRORS} ? 1 : 0),
         RaiseError => 0,

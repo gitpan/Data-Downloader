@@ -1,5 +1,11 @@
 Release history for Data-Downloader
 
+Version 0.9906 2012-11-19
+  - various bug fixes
+  - improved docs and added references to datacasting and esip
+
+------------------------------------------------------------------------
+
 Version 0.9905 2012-10-11
  - removed system find from tests
 

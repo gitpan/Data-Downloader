@@ -1,15 +1,62 @@
 =head1 NAME
 
-Data::Downloader -- Download and organize files using RSS feeds and templates
+Data::Downloader -- Download and organize files using RSS feeds and templates.
 
 =head1 SYNOPSIS
 
-    #!/usr/bin/env perl
+    use Data::Downloader -init_logging => "INFO";
 
-    use Data::Downloader -init_logging => "DEBUG";
-    use strict;
+    my $repo = Data::Downloader::Repository->new(name => "ozone");
+    $repo->load(speculative => 1) or die "ozone repository not configured";
 
-    # Get pictures of apples.  Store them using md5's, make symlinks using date and tags
+    for my $feed (@{ $dado->feeds }) {
+        $feed->refresh;
+    }
+
+    for my $file (@{ $dado->files }) {
+        $file->download;
+    }
+
+=head1 DESCRIPTION
+
+Data::Downloader allows one to download and maintain local repositories
+of files.  File metadata may be obtained from RSS or Atom feeds.  Files
+are stored using MD5 sums, and symbolic links can be created based on
+the metadata for the files.
+
+A command line version of Data::Downloader, L<dado>, is also available.
+
+Data::Downloader uses an SQLite L<database|Data::Downloader::DB>
+to store both the L<configuration|Data::Downloader::Config>, as well
+as information about the L<file|Data::Downloader::File>s and
+L<trees of symbolic links|Data::Downloader::Linktree> stored
+in a repository.
+
+Parameters may be sent when updating L<feed|Data::Downloader::Feed>s;
+parameters are replace tokens in URLs for the RSS/Atom feeds, just
+as in an L<opensearch|http://opensearch.org> URL template.
+
+=head1 BACKGROUND
+
+Several efforts are underway to extend Atom and RSS as a mechanism
+for distribution of scientific data.  For example, L<datacasting|http://datacasting.jpl.nasa.gov> provides a versatile response format
+as well as a client capable of graphically oriented searches for data.
+ESIP Discovery Services (e.g. L<version 1.1|http://wiki.esipfed.org/index.php/Discovery_Cast_Atom_Response_Format_v1.1>)
+are working on specifications for server-side filtering of data, based
+on the L<opensearch|http://opensearch.org> specification.
+
+In addition, standards such as L<mrss|https://en.wikipedia.org/wiki/Media_RSS> and
+L<georss|https://en.wikipedia.org/wiki/GeoRSS> provide ways to represent structured
+metadata for resources which are often downloaded and organized on a local disk.
+
+In addition to reading feeds, Data::Downloader may be used as an
+L<LRU|Data::Downloader::Cache::LRU> L<cache|Data::Downloader::Cache> which may
+be populated directly without querying Atom/RSS feeds.
+
+=head1 EXAMPLE
+
+This is an example of subscribing to flickr's mrss feed to download
+images.  For more examples, please see L<dado>.
 
     my $images = Data::Downloader::Repository->new(
         name           => "images",
@@ -59,52 +106,15 @@ Data::Downloader -- Download and organize files using RSS feeds and templates
 
     $images->download_all;
 
-=head1 DESCRIPTION
-
-Data::Downloader allows one to maintain local repositories of files
-and file metadata based on RSS feeds which describe the files.  It
-stores files uniquely using MD5 sums, but allows for the creation
-and maintenance of trees of symbolic links to the downloaded files.
-
-An SQLite database is used to store both the configuration and information
-about the files that have been downloaded.  This file is automatically
-created in $HOME/.data_downloader.db (by default).
-
-This distribution also conatins a command-line tool, L<dado>, for
-managing the repository.
-
-=head2 CONFIGURATION
-
-See L<Data::Downloader::Config>.
-
-=head2 UPDATING RSS FEEDS
-
-Read about this in L<Data::Downloader::Feed>.
-
-=head2 DOWNLOADING FILES
-
-Take a look at L<Data::Downloader::File>.
-
-=head2 MAINTAINING SYMLINKS
-
-Check out L<Data::Downloader::Linktree>.
-
 =head1 SEE ALSO
 
-L<dado>
-
-L<Data::Downloader::Config>
-
-L<Data::Downloader::Repository>
-
-L<Data::Downloader::Feed>
-
-L<Data::Downloader::DB>
-
-L<Data::Downloader::Cache>
-
-L<Data::Downloader::Linktree>
-
+L<dado>,
+L<Data::Downloader::Config>,
+L<Data::Downloader::Repository>,
+L<Data::Downloader::Feed>,
+L<Data::Downloader::DB>,
+L<Data::Downloader::Cache>,
+L<Data::Downloader::Linktree>,
 L<Rose>
 
 =cut
@@ -124,7 +134,7 @@ use strict;
 
 def_noun "metadatum" => "metadata";
 
-our $VERSION = '0.9905';
+our $VERSION = '0.9906';
 our $db;
 our $useProgressBars;   # set during import to turn on Smart::Comments
 our $setupDone;
