@@ -4,7 +4,7 @@ use Test::More qw/no_plan/;
 use FindBin qw/$Bin/;
 use t::lib::functions;
 use Data::Downloader -init_logging => "FATAL";
-use YAML qw/Dump/;
+use YAML::XS qw/Dump/;
 use strict;
 use warnings;
 
